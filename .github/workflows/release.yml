@@ -3,7 +3,7 @@ name: Release Maven Artifact
 on:
   push:
     branches:
-      - main
+      - release/*
 
 permissions:
   contents: write

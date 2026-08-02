@@ -1,0 +1,74 @@
+name: Develop Snapshot Build
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+
+  build-snapshot:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Checkout source code
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      # 2. Setup Java and Maven
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 19
+          cache: maven
+          server-id: github
+
+
+      # 3. Configure Git user
+      - name: Configure Git
+        run: |
+          git config user.name "venu challa"
+          git config user.email "venuchalla1993@gmail.com"
+
+
+
+      # 4. Read current Maven version
+      - name: Read Current Version
+        id: current
+        run: |
+
+          CURRENT_VERSION=$(mvn help:evaluate \
+            -Dexpression=project.version \
+            -q \
+            -DforceStdout)
+
+          echo "Current version: $CURRENT_VERSION"
+
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+
+      - name: Set Snapshot Version
+        run: |
+
+          mvn versions:set \
+          -DnewVersion=1.2.${{github.run_number}}-SNAPSHOT
+
+          mvn versions:commit
+
+
+      - name: Build and Deploy Snapshot
+
+        run: |
+
+          mvn clean deploy \
+          -DskipTests

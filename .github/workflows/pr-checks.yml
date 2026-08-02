@@ -48,7 +48,7 @@ jobs:
       - name: Validate Branch Name
         run: |
           BRANCH="${{ github.head_ref }}"
-          
+
           # Allowed patterns: feature/*, develop, release/*, hotfix/*, main
           if [[ $BRANCH =~ ^(feature|release|hotfix)/ ]] || [[ $BRANCH == "develop" ]] || [[ $BRANCH == "main" ]]; then
             echo "✅ Branch name '$BRANCH' is valid"
@@ -83,15 +83,15 @@ jobs:
             const version = "${{ steps.version.outputs.VERSION }}";
             const branch = "${{ github.head_ref }}";
             const status = "${{ job.status }}";
-            
+
             const statusEmoji = status === 'success' ? '✅' : '❌';
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `## Build Check ${statusEmoji}
-            
+
 **Version**: \`${version}\`
 **Branch**: \`${branch}\`
 **Status**: ${statusEmoji} ${status.charAt(0).toUpperCase() + status.slice(1)}

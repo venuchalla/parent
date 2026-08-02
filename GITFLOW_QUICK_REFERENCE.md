@@ -123,14 +123,14 @@ Main Branch (v1.1.0) ← PRODUCTION
 
 ## ❌ What NOT to Do
 
-❌ Commit directly to `main` or `develop`  
-❌ Force push to any shared branch  
-❌ Manual version edits in pom.xml  
-❌ Skip tests before PR  
-❌ Merge to `main` without tag  
-❌ Release with untested code  
-❌ Feature branches longer than 2 weeks  
-❌ Ignore GitHub Actions failures  
+❌ Commit directly to `main` or `develop`
+❌ Force push to any shared branch
+❌ Manual version edits in pom.xml
+❌ Skip tests before PR
+❌ Merge to `main` without tag
+❌ Release with untested code
+❌ Feature branches longer than 2 weeks
+❌ Ignore GitHub Actions failures
 
 ---
 

@@ -74,13 +74,13 @@ jobs:
           release_name: Release ${{ steps.version.outputs.VERSION }}
           body: |
             # Release ${{ steps.version.outputs.VERSION }}
-            
+
             This is an automated release build.
-            
+
             ## Artifacts
             - Published to GitHub Packages
             - Docker image available (if applicable)
-            
+
             ## Build Info
             - Commit: ${{ github.sha }}
             - Branch: ${{ github.ref }}

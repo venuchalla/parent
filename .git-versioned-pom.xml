@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.example</groupId>
   <artifactId>springparent</artifactId>
-  <version>feature-releasebranch-SNAPSHOT</version>
+  <version>0.0.0-releasebranch-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>springparent</name>
   <description>Demo project for Spring Boot</description>

@@ -14,33 +14,34 @@
         <!-- Develop -->
         <ref type="branch">
             <pattern>develop</pattern>
-            <version>${describe.nextVersion}-SNAPSHOT</version>
+            <version>${describe.tag.version}-SNAPSHOT</version>
             <updatePom>true</updatePom>
         </ref>
 
         <!-- Release -->
         <ref type="branch">
-            <pattern>release/(?<release>.*)</pattern>
-            <version>${ref.release}-RC1</version>
+            <pattern>^release/(?&lt;version&gt;.*)$</pattern>
+            <version>${ref.version}-RC1</version>
             <updatePom>true</updatePom>
         </ref>
 
         <!-- Hotfix -->
         <ref type="branch">
-            <pattern>hotfix/(?<hotfix>.*)</pattern>
-            <version>${ref.hotfix}</version>
+            <pattern>^hotfix/(?&lt;version&gt;.*)$</pattern>
+            <version>${ref.version}</version>
             <updatePom>true</updatePom>
         </ref>
 
         <!-- Feature Branch -->
         <ref type="branch">
-            <pattern>feature/(?<feature>.*)</pattern>
-            <version>${describe.nextVersion}-${ref.feature}-SNAPSHOT</version>
+            <pattern>^feature/(?&lt;featureName&gt;.*)$</pattern>
+            <version>${describe.tag.version}-${ref.featureName}-SNAPSHOT</version>
             <updatePom>true</updatePom>
         </ref>
+        
         <!-- Git Tag -->
         <ref type="tag">
-            <pattern><![CDATA[v(?<version>.*)]]></pattern>
+            <pattern>^v(?&lt;version&gt;.*)$</pattern>
             <version>${ref.version}</version>
             <updatePom>true</updatePom>
         </ref>

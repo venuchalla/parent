@@ -67,18 +67,6 @@ jobs:
       # 8. Create Release using GitHub CLI
       - name: Create Release
         run: |
-          gh release create "${{ steps.version.outputs.VERSION }}" \
-            --title "Release ${{ steps.version.outputs.VERSION }}" \
-            --notes "# Release ${{ steps.version.outputs.VERSION }}
-
-This is an automated release build.
-
-## Artifacts
-- Published to GitHub Packages
-- Docker image available (if applicable)
-
-## Build Info
-- Commit: ${{ github.sha }}
-- Branch: ${{ github.ref }}"
+          gh release create "${{ steps.version.outputs.VERSION }}" --title "Release ${{ steps.version.outputs.VERSION }}" --notes "Release ${{ steps.version.outputs.VERSION }} - Automated build"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

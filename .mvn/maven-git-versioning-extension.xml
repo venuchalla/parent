@@ -8,38 +8,42 @@
         <ref type="branch">
             <pattern>main</pattern>
             <version>${describe.tag.version}</version>
+            <updatePom>true</updatePom>
         </ref>
 
         <!-- Develop -->
         <ref type="branch">
             <pattern>develop</pattern>
             <version>${describe.nextVersion}-SNAPSHOT</version>
+            <updatePom>true</updatePom>
         </ref>
 
         <!-- Release -->
         <ref type="branch">
             <pattern>release/(?<release>.*)</pattern>
             <version>${ref.release}-RC1</version>
+            <updatePom>true</updatePom>
         </ref>
 
         <!-- Hotfix -->
         <ref type="branch">
             <pattern>hotfix/(?<hotfix>.*)</pattern>
             <version>${ref.hotfix}</version>
+            <updatePom>true</updatePom>
         </ref>
 
-        <!-- Feature -->
+        <!-- Feature Branch -->
         <ref type="branch">
             <pattern>feature/(?<feature>.*)</pattern>
             <version>${describe.nextVersion}-${ref.feature}-SNAPSHOT</version>
+            <updatePom>true</updatePom>
         </ref>
-
-        <!-- Git Tags -->
+        <!-- Git Tag -->
         <ref type="tag">
             <pattern><![CDATA[v(?<version>.*)]]></pattern>
             <version>${ref.version}</version>
+            <updatePom>true</updatePom>
         </ref>
-
     </refs>
 
     <rev>

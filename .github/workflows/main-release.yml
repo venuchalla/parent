@@ -1,0 +1,89 @@
+name: Main Release Build
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. Setup Java and Maven
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 19
+          cache: maven
+          server-id: github
+
+      # 3. Configure Git user
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 4. Extract version from git tag
+      - name: Get Release Version
+        id: version
+        run: |
+          # Get the current tag/version
+          VERSION=$(mvn help:evaluate \
+            -Dexpression=project.version \
+            -q \
+            -DforceStdout)
+          
+          echo "Release version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      # 5. Build Artifact
+      - name: Build
+        run: |
+          mvn clean package -DskipTests
+
+      # 6. Run Tests
+      - name: Test
+        run: |
+          mvn test
+
+      # 7. Deploy Release Artifact
+      - name: Deploy to GitHub Packages
+        run: |
+          mvn deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 8. Create Release Notes
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          body: |
+            # Release ${{ steps.version.outputs.VERSION }}
+            
+            This is an automated release build.
+            
+            ## Artifacts
+            - Published to GitHub Packages
+            - Docker image available (if applicable)
+            
+            ## Build Info
+            - Commit: ${{ github.sha }}
+            - Branch: ${{ github.ref }}
+          draft: false
+          prerelease: false

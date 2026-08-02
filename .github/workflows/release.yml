@@ -1,4 +1,4 @@
-name: Release Maven Artifact
+name: Release Branch Build & Staging
 
 on:
   push:

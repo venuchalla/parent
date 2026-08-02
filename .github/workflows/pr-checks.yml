@@ -85,21 +85,22 @@ jobs:
             const status = "${{ job.status }}";
 
             const statusEmoji = status === 'success' ? '✅' : '❌';
+            const body = `## Build Check ${statusEmoji}
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## Build Check ${statusEmoji}
-
-**Version**: \`${version}\`
-**Branch**: \`${branch}\`
+**Version**: ${version}
+**Branch**: ${branch}
 **Status**: ${statusEmoji} ${status.charAt(0).toUpperCase() + status.slice(1)}
 
 ### Checks
 - ${status === 'success' ? '✅' : '❌'} Unit Tests
 - ${status === 'success' ? '✅' : '❌'} Build
-- ${status === 'success' ? '✅' : '❌'} Code Quality Verification`
+- ${status === 'success' ? '✅' : '❌'} Code Quality Verification`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
             });
 
   dependency-check:
@@ -120,4 +121,6 @@ jobs:
       - name: Dependency Security Check
         run: |
           mvn dependency-check:check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true

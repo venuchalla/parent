@@ -3,23 +3,47 @@
                xsi:schemaLocation="https://github.com/qoomon/maven-git-versioning-extension https://qoomon.github.io/maven-git-versioning-extension/configuration-9.4.0.xsd">
 
     <refs>
+
+        <!-- Main -->
         <ref type="branch">
-            <pattern>.+</pattern>
-            <version>${ref}-SNAPSHOT</version>
-            <properties>
-                <foo>${ref}</foo>
-            </properties>
+            <pattern>main</pattern>
+            <version>${describe.tag.version}</version>
         </ref>
 
+        <!-- Develop -->
+        <ref type="branch">
+            <pattern>develop</pattern>
+            <version>${describe.nextVersion}-SNAPSHOT</version>
+        </ref>
+
+        <!-- Release -->
+        <ref type="branch">
+            <pattern>release/(?<release>.*)</pattern>
+            <version>${ref.release}-RC1</version>
+        </ref>
+
+        <!-- Hotfix -->
+        <ref type="branch">
+            <pattern>hotfix/(?<hotfix>.*)</pattern>
+            <version>${ref.hotfix}</version>
+        </ref>
+
+        <!-- Feature -->
+        <ref type="branch">
+            <pattern>feature/(?<feature>.*)</pattern>
+            <version>${describe.nextVersion}-${ref.feature}-SNAPSHOT</version>
+        </ref>
+
+        <!-- Git Tags -->
         <ref type="tag">
             <pattern><![CDATA[v(?<version>.*)]]></pattern>
             <version>${ref.version}</version>
         </ref>
+
     </refs>
 
-    <!-- optional fallback configuration in case of no matching ref configuration-->
     <rev>
-        <version>${commit}</version>
+        <version>0.0.0-${commit}</version>
     </rev>
 
 </configuration>

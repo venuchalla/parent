@@ -39,12 +39,11 @@ jobs:
       - name: Get Release Version
         id: version
         run: |
-          # Get the current tag/version
-          VERSION=$(mvn help:evaluate \
-            -Dexpression=project.version \
-            -q \
-            -DforceStdout)
-          
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if [ -z "$VERSION" ]; then
+            echo "Error: Could not determine project version"
+            exit 1
+          fi
           echo "Release version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 

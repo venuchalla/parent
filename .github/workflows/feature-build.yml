@@ -34,11 +34,7 @@ jobs:
       - name: Get Current Version
         id: version
         run: |
-          VERSION=$(mvn help:evaluate \
-            -Dexpression=project.version \
-            -q \
-            -DforceStdout)
-          
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "Feature version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 

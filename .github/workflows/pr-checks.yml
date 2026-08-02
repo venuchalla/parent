@@ -36,15 +36,11 @@ jobs:
           java-version: 19
           cache: maven
 
-      # 3. Get version
+      # 3. Get PR version
       - name: Get PR Version
         id: version
         run: |
-          VERSION=$(mvn help:evaluate \
-            -Dexpression=project.version \
-            -q \
-            -DforceStdout)
-          
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "PR Version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 

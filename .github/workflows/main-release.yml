@@ -70,7 +70,7 @@ jobs:
           gh release create "${{ steps.version.outputs.VERSION }}" \
             --title "Release ${{ steps.version.outputs.VERSION }}" \
             --notes "# Release ${{ steps.version.outputs.VERSION }}
-          
+
 This is an automated release build.
 
 ## Artifacts

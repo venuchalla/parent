@@ -67,7 +67,6 @@ jobs:
 
 
       - name: Build and Deploy Snapshot
-
         run: |
           mvn clean deploy \
           -DskipTests

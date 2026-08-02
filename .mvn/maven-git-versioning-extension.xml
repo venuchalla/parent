@@ -1,0 +1,54 @@
+<configuration xmlns="https://github.com/qoomon/maven-git-versioning-extension"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="https://github.com/qoomon/maven-git-versioning-extension https://qoomon.github.io/maven-git-versioning-extension/configuration-9.4.0.xsd">
+
+    <refs>
+
+        <!-- Main -->
+        <ref type="branch">
+            <pattern>main</pattern>
+            <version>${describe.tag.version}</version>
+            <updatePom>true</updatePom>
+        </ref>
+
+        <!-- Develop -->
+        <ref type="branch">
+            <pattern>develop</pattern>
+            <version>${describe.tag.version}-SNAPSHOT</version>
+            <updatePom>true</updatePom>
+        </ref>
+
+        <!-- Release -->
+        <ref type="branch">
+            <pattern>^release/(?&lt;version&gt;.*)$</pattern>
+            <version>${ref.version}-RC1</version>
+            <updatePom>true</updatePom>
+        </ref>
+
+        <!-- Hotfix -->
+        <ref type="branch">
+            <pattern>^hotfix/(?&lt;version&gt;.*)$</pattern>
+            <version>${ref.version}</version>
+            <updatePom>true</updatePom>
+        </ref>
+
+        <!-- Feature Branch -->
+        <ref type="branch">
+            <pattern>^feature/(?&lt;featureName&gt;.*)$</pattern>
+            <version>${describe.tag.version}-${ref.featureName}-SNAPSHOT</version>
+            <updatePom>true</updatePom>
+        </ref>
+        
+        <!-- Git Tag -->
+        <ref type="tag">
+            <pattern>^v(?&lt;version&gt;.*)$</pattern>
+            <version>${ref.version}</version>
+            <updatePom>true</updatePom>
+        </ref>
+    </refs>
+
+    <rev>
+        <version>0.0.0-${commit}</version>
+    </rev>
+
+</configuration>

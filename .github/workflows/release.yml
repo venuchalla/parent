@@ -10,21 +10,15 @@ permissions:
   packages: write
 
 jobs:
-
   release:
-
     runs-on: ubuntu-latest
 
     steps:
-
-      # 1. Checkout source code
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-
-      # 2. Setup Java and Maven
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -33,137 +27,23 @@ jobs:
           cache: maven
           server-id: github
 
-
-      # 3. Configure Git user
       - name: Configure Git
-        run: |
-          git config user.name "venu challa"
-          git config user.email "venuchalla1993@gmail.com"
+        run: git config user.name "github-actions[bot]" && git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Get Release Version
+        id: version
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
-
-      # 4. Read current Maven version
-      - name: Read Current Version
-        id: current
-        run: |
-
-          CURRENT_VERSION=$(mvn help:evaluate \
-            -Dexpression=project.version \
-            -q \
-            -DforceStdout)
-
-          echo "Current version: $CURRENT_VERSION"
-
-          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-
-
-
-      # 5. Create Release Version
-      - name: Update Release Version
-        id: release
-        run: |
-
-          CURRENT=${{ steps.current.outputs.CURRENT_VERSION }}
-
-          # remove -SNAPSHOT
-          RELEASE_VERSION=${CURRENT%-SNAPSHOT}
-
-          echo "Release version: $RELEASE_VERSION"
-
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_OUTPUT
-
-
-          mvn versions:set \
-             -DnewVersion=$RELEASE_VERSION
-
-
-          mvn versions:commit
-
-
-
-      # 6. Commit release version
-      - name: Commit Release Version
-        run: |
-
-          git add .
-
-          git commit \
-            -m "release: ${{ steps.release.outputs.RELEASE_VERSION }}"
-
-          git push
-
-
-
-      # 7. Create Git Tag
-      - name: Create Git Tag
-        run: |
-
-          TAG=v${{ steps.release.outputs.RELEASE_VERSION }}
-
-          git tag $TAG
-
-          git push origin $TAG
-
-
-
-      # 8. Build Artifact
       - name: Build
-        run: |
+        run: mvn clean package -DskipTests
 
-          mvn clean package
+      - name: Test
+        run: mvn test
 
-
-
-      # 9. Deploy Release Artifact
-      - name: Deploy to GitHub Packages
-        run: |
-
-          mvn deploy
-
+      - name: Deploy Release Candidate to GitHub Packages
+        run: mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-
-      # 10. Calculate Next Development Version
-      - name: Next Development Version
-        id: next
-        run: |
-
-          RELEASE=${{ steps.release.outputs.RELEASE_VERSION }}
-
-
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$RELEASE"
-
-
-          NEXT_PATCH=$((PATCH + 1))
-
-
-          NEXT_VERSION="$MAJOR.$MINOR.$NEXT_PATCH-SNAPSHOT"
-
-
-          echo "Next version: $NEXT_VERSION"
-
-
-          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_OUTPUT
-
-
-          mvn versions:set \
-             -DnewVersion=$NEXT_VERSION
-
-
-          mvn versions:commit
-
-
-
-      # 11. Commit Next Snapshot
-      - name: Commit Next Development Version
-        run: |
-
-          git add .
-
-          git commit \
-          -m "chore: start next development version ${{ steps.next.outputs.NEXT_VERSION }}"
-
-
-          git push
+      - name: Release Ready
+        run: echo "Release ${{ steps.version.outputs.VERSION }} ready for QA testing and merge to main"

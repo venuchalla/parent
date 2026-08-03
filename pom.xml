@@ -474,25 +474,25 @@
       </plugin>
 
       <!-- 2. Generate Build Number -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>3.2.1</version>
+<!--      <plugin>-->
+<!--        <groupId>org.codehaus.mojo</groupId>-->
+<!--        <artifactId>buildnumber-maven-plugin</artifactId>-->
+<!--        <version>3.2.1</version>-->
 
-        <configuration>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-        </configuration>
+<!--        <configuration>-->
+<!--          <doCheck>false</doCheck>-->
+<!--          <doUpdate>false</doUpdate>-->
+<!--        </configuration>-->
 
-        <executions>
-          <execution>
-            <goals>
-              <goal>create</goal>
-            </goals>
-            <phase>validate</phase>
-          </execution>
-        </executions>
-      </plugin>
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>create</goal>-->
+<!--            </goals>-->
+<!--            <phase>validate</phase>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
       <!-- 3. Maven Release -->
       <plugin>
@@ -506,11 +506,11 @@
       </plugin>
 
       <!-- 5. Version Management -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <version>2.19.0</version>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.codehaus.mojo</groupId>-->
+<!--        <artifactId>versions-maven-plugin</artifactId>-->
+<!--        <version>2.19.0</version>-->
+<!--      </plugin>-->
 
     </plugins>
 

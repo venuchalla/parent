@@ -13,5 +13,6 @@ public class ParentApplication {
 
     SpringApplication.run(ParentApplication.class, args);
     logger.info("Parent application started");
+
   }
 }

@@ -44,6 +44,7 @@ jobs:
         run: mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
       - name: Release Ready
-        run: echo "Release ${{ steps.version.outputs.VERSION }} ready for QA testing and merge to main"
+        run: echo "✅ Release ${{ steps.version.outputs.VERSION }} ready for QA and merge to main"

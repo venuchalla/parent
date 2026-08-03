@@ -74,35 +74,6 @@ jobs:
           mvn verify -DskipTests
         continue-on-error: true
 
-      # 8. Add PR comment with build info
-      - name: Comment PR Status
-        uses: actions/github-script@v7
-        if: always()
-        with:
-          script: |
-            const version = "${{ steps.version.outputs.VERSION }}";
-            const branch = "${{ github.head_ref }}";
-            const status = "${{ job.status }}";
-
-            const statusEmoji = status === 'success' ? '✅' : '❌';
-            const body = `## Build Check ${statusEmoji}
-
-**Version**: ${version}
-**Branch**: ${branch}
-**Status**: ${statusEmoji} ${status.charAt(0).toUpperCase() + status.slice(1)}
-
-### Checks
-- ${status === 'success' ? '✅' : '❌'} Unit Tests
-- ${status === 'success' ? '✅' : '❌'} Build
-- ${status === 'success' ? '✅' : '❌'} Code Quality Verification`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
-
   dependency-check:
     runs-on: ubuntu-latest
     continue-on-error: true

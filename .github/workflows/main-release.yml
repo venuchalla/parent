@@ -14,13 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout source code
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. Setup Java and Maven
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -29,46 +27,25 @@ jobs:
           cache: maven
           server-id: github
 
-      # 3. Configure Git user
       - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+        run: git config user.name "github-actions[bot]" && git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # 4. Extract version from git tag
       - name: Get Release Version
         id: version
-        run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if [ -z "$VERSION" ]; then
-            echo "Error: Could not determine project version"
-            exit 1
-          fi
-          echo "Release version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
-      # 5. Build Artifact
       - name: Build
-        run: |
-          mvn clean package -DskipTests
+        run: mvn clean package -DskipTests
 
-      # 6. Run Tests
       - name: Test
-        run: |
-          mvn test
+        run: mvn test
 
-      # 7. Deploy Release Artifact
       - name: Deploy to GitHub Packages
-        run: |
-          mvn deploy -DskipTests
+        run: mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 8. Create Release using GitHub CLI
       - name: Create Release
-        run: |
-          gh release create "${{ steps.version.outputs.VERSION }}" \
-            --title "Release ${{ steps.version.outputs.VERSION }}" \
-            --notes "Automated release build"
+        run: gh release create "${{ steps.version.outputs.VERSION }}" --title "Release ${{ steps.version.outputs.VERSION }}" --notes "Automated release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

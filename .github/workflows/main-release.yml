@@ -38,37 +38,20 @@ jobs:
       # 4. Extract version from git tag
       - name: Get Release Version
         id: version
-        run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if [ -z "$VERSION" ]; then
-            echo "Error: Could not determine project version"
-            exit 1
-          fi
-          echo "Release version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
-      # 5. Build Artifact
       - name: Build
-        run: |
-          mvn clean package -DskipTests
+        run: mvn clean package -DskipTests
 
-      # 6. Run Tests
       - name: Test
-        run: |
-          mvn test
+        run: mvn test
 
-      # 7. Deploy Release Artifact
       - name: Deploy to GitHub Packages
-        run: |
-          mvn deploy -DskipTests
+        run: mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 8. Create Release using GitHub CLI
       - name: Create Release
-        run: |
-          gh release create "${{ steps.version.outputs.VERSION }}" \
-            --title "Release ${{ steps.version.outputs.VERSION }}" \
-            --notes "Automated release build"
+        run: gh release create "${{ steps.version.outputs.VERSION }}" --title "Release ${{ steps.version.outputs.VERSION }}" --notes "Automated release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

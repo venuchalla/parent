@@ -10,7 +10,6 @@ public class ParentApplication {
   private static Logger logger = LoggerFactory.getLogger(ParentApplication.class);
 
   public static void main(String[] args) {
-
     SpringApplication.run(ParentApplication.class, args);
     logger.info("Parent application started");
 

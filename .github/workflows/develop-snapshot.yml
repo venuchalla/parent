@@ -28,7 +28,7 @@ jobs:
           server-id: github
 
       - name: Configure Git
-        run: git config user.name "github-actions[bot]" && git config user.email "github-actions[bot]@users.noreply.github.com"
+        run: git config user.name "venu challa" && git config user.email "venuchalla1993@gmail.com"
 
       - name: Get Current Version
         id: version

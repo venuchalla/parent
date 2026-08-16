@@ -34,34 +34,24 @@ jobs:
       - name: Get Current Version
         id: version
         run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          VERSION=$(mvn help:evaluate \
+            -Dexpression=project.version \
+            -q \
+            -DforceStdout)
+
           echo "Feature version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
-      # 4. Run unit tests
-      - name: Unit Tests
-        run: |
-          mvn test
+      - name: Build and Test
+        run: mvn clean verify
 
-      # 5. Build application
-      - name: Build
-        run: |
-          mvn clean package -DskipTests
-
-      # 6. Code quality checks (optional - integrate with SonarQube if needed)
-      - name: Code Quality
-        run: |
-          mvn verify -DskipTests
-        continue-on-error: true
-
-      # 7. Generate artifact report
       - name: Build Artifact Summary
         run: |
-          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version**: ${{ steps.version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Branch**: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version**: ${{ steps.version.outputs.VERSION }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Commit**: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Status**: ✅ Passed" >> "$GITHUB_STEP_SUMMARY"
 
       # 8. Upload build artifacts
       - name: Upload Artifacts

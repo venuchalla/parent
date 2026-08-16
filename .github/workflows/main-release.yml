@@ -1,4 +1,4 @@
-name: Main Release Build
+name: Release
 
 on:
   push:
@@ -14,11 +14,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # 1. Checkout complete Git history
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -27,25 +30,43 @@ jobs:
           cache: maven
           server-id: github
 
+      # 3. Configure Git
       - name: Configure Git
-        run: git config user.name "venu challa" && git config user.email "venuchalla1993@gmail.com"
+        run: |
+          git config user.name "venu challa"
+          git config user.email "venuchalla1993@gmail.com"
 
-      - name: Get Release Version
-        id: version
-        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+      # 4. Show Git information
+      - name: Show Version Information
+        run: |
+          echo "Git tag:"
+          git describe --tags --exact-match
 
+          echo "Maven version:"
+          mvn help:evaluate \
+            -Dexpression=project.version \
+            -q \
+            -DforceStdout
+
+      # 5. Build
       - name: Build
         run: mvn clean package -DskipTests
 
+      # 6. Test
       - name: Test
         run: mvn test
 
+      # 7. Deploy to GitHub Packages
       - name: Deploy to GitHub Packages
         run: mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release
-        run: gh release create "${{ steps.version.outputs.VERSION }}" --title "Release ${{ steps.version.outputs.VERSION }}" --notes "Automated release"
+      # 8. Create GitHub Release
+      - name: Create GitHub Release
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Release ${GITHUB_REF_NAME}" \
+            --notes "Automated release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

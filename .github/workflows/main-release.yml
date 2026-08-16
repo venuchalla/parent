@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
 
       # 2. Setup Java
       - name: Setup Java
@@ -36,18 +37,17 @@ jobs:
           git config user.name "venu challa"
           git config user.email "venuchalla1993@gmail.com"
 
-      # 4. Show Git information
-      - name: Show Version Information
+      - name: Get Maven Version
+        id: version
         run: |
-          echo "Git tag:"
-          git describe --tags --exact-match
-
-          echo "Maven version:"
-          mvn help:evaluate \
+          VERSION=$(mvn help:evaluate \
             -Dexpression=project.version \
             -q \
-            -DforceStdout
+            -DforceStdout)
 
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "Maven Version: $VERSION"
       # 5. Build
       - name: Build
         run: mvn clean package -DskipTests
@@ -62,11 +62,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 8. Create GitHub Release
+      - name: Create Git Tag
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists"
+          else
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
+          fi
+
       - name: Create GitHub Release
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            --title "Release ${GITHUB_REF_NAME}" \
-            --notes "Automated release"
+          VERSION="${{ steps.version.outputs.VERSION }}"
+
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "Release v$VERSION already exists"
+          else
+            gh release create "v$VERSION" \
+              --title "Release v$VERSION" \
+              --notes "Automated release"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

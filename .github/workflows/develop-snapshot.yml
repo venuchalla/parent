@@ -53,9 +53,9 @@ jobs:
 
           # Strip any trailing -SNAPSHOT from the base so we don't end up
           # with "0.0.1-SNAPSHOT-RC0-SNAPSHOT"
-          BASE_VERSION="${BASE_VERSION%-SNAPSHOT}"
+          BASE_VERSION="${BASE_VERSION}"
 
-          VERSION="${BASE_VERSION}-RC0-SNAPSHOT"
+          VERSION="${BASE_VERSION}"
 
           echo "Base version: $BASE_VERSION"
           echo "Build version: $VERSION"

@@ -1,54 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration xmlns="https://github.com/qoomon/maven-git-versioning-extension"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="https://github.com/qoomon/maven-git-versioning-extension https://qoomon.github.io/maven-git-versioning-extension/configuration-9.4.0.xsd">
 
+    <!-- Rules evaluated top -> bottom, first match wins -->
     <refs>
 
-        <!-- Main -->
+        <!-- FINAL RELEASE: tag v1.4.0 -> version 1.4.0
+             Also covers hotfix tags (v1.4.1) since the pattern is generic. -->
+        <ref type="tag">
+            <pattern><![CDATA[v(?<version>\d+\.\d+\.\d+)]]></pattern>
+            <version>${ref.version}</version>
+            <updatePom>false</updatePom>
+        </ref>
+
+        <!-- MAIN: uses whatever version is currently sitting in pom.xml
+             (no -SNAPSHOT suffix). No dependency on any git tag existing -
+             works even on the very first build, before any release. -->
         <ref type="branch">
             <pattern>main</pattern>
-            <version>${describe.tag.version}</version>
-            <updatePom>true</updatePom>
+            <version>${version.release}</version>
+            <updatePom>false</updatePom>
         </ref>
 
-        <!-- Develop -->
+        <!-- RELEASE CANDIDATE: release/1.4.0 -> 1.4.0-RC.<n>
+             <n> is NOT hardcoded - injected by the workflow as the
+             RC_NUMBER env var, computed from existing RC tags. -->
+        <ref type="branch">
+            <pattern><![CDATA[release/(?<version>\d+\.\d+\.\d+)]]></pattern>
+            <version>${ref.version}-RC.${env.RC_NUMBER}</version>
+            <updatePom>false</updatePom>
+        </ref>
+
+        <!-- HOTFIX CANDIDATE: hotfix/1.4.1 -> 1.4.1-RC.<n>, same mechanism -->
+        <ref type="branch">
+            <pattern><![CDATA[hotfix/(?<version>\d+\.\d+\.\d+)]]></pattern>
+            <version>${ref.version}-RC.${env.RC_NUMBER}</version>
+            <updatePom>false</updatePom>
+        </ref>
+
+        <!-- INTEGRATION: develop -> <pom-version-without-SNAPSHOT>-SNAPSHOT
+             Reads straight from pom.xml's own <version> - no git tag
+             required. This is what "build with the same pom version"
+             means: whatever's in the file is what gets used. -->
         <ref type="branch">
             <pattern>develop</pattern>
-            <version>${describe.tag.version}-SNAPSHOT</version>
-            <updatePom>true</updatePom>
+            <version>${version.release}-SNAPSHOT</version>
+            <updatePom>false</updatePom>
         </ref>
 
-        <!-- Release -->
-        <ref type="branch">
-            <pattern>^release/(?&lt;version&gt;.*)$</pattern>
-            <version>${ref.version}-RC1</version>
-            <updatePom>true</updatePom>
-        </ref>
+        <!-- IN-PROGRESS WORK: feature/xyz, bugfix/xyz -> traceable snapshot,
+             never published to a shared repo (see pr-validation.yml) -->
+        <!--        <ref type="branch">-->
+        <!--            <pattern><![CDATA[(feature|bugfix)/(?<name>.+)]]></pattern>-->
+        <!--            <version>${version.release}-${ref.name}-SNAPSHOT</version>-->
+        <!--            <updatePom>true</updatePom>-->
+        <!--        </ref>-->
 
-        <!-- Hotfix -->
-        <ref type="branch">
-            <pattern>^hotfix/(?&lt;version&gt;.*)$</pattern>
-            <version>${ref.version}</version>
-            <updatePom>true</updatePom>
-        </ref>
-
-        <!-- Feature Branch -->
-        <ref type="branch">
-            <pattern>^feature/(?&lt;featureName&gt;.*)$</pattern>
-            <version>${describe.tag.version}-${ref.featureName}-SNAPSHOT</version>
-            <updatePom>true</updatePom>
-        </ref>
-        
-        <!-- Git Tag -->
-        <ref type="tag">
-            <pattern>^v(?&lt;version&gt;.*)$</pattern>
-            <version>${ref.version}</version>
-            <updatePom>true</updatePom>
-        </ref>
     </refs>
 
-    <rev>
-        <version>0.0.0-${commit}</version>
-    </rev>
+    <!-- Fallback if HEAD matches none of the rules above (e.g. detached
+         HEAD with no branch/tag context) -->
+    <!--    <rev>-->
+    <!--        <version>${commit}</version>-->
+    <!--    </rev>-->
 
 </configuration>

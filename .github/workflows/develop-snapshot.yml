@@ -27,6 +27,9 @@ jobs:
           cache: maven
           server-id: github
 
+      - name: Configure Git
+        run: git config user.name "venuchalla" && git config user.email "venuchalla1993@gmail.com"
+
       - name: Determine Base Version
         id: version
         shell: bash

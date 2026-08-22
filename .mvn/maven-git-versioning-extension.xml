@@ -35,7 +35,7 @@
         <!-- Feature Branch -->
         <ref type="branch">
             <pattern>^feature/(?&lt;featureName&gt;.*)$</pattern>
-            <version>${describe.tag.version}-${ref.featureName}-SNAPSHOT</version>
+            <version>${describe.tag.version}-SNAPSHOT</version>
             <updatePom>true</updatePom>
         </ref>
         

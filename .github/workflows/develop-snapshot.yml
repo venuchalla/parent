@@ -27,18 +27,41 @@ jobs:
           cache: maven
           server-id: github
 
-      - name: Configure Git
-        run: git config user.name "venuchalla" && git config user.email "venuchalla1993@gmail.com"
-
-      - name: Get Current Version
+      - name: Determine Base Version
         id: version
-        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+        shell: bash
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
 
-      - name: Build and Deploy Snapshot
+          if [ -n "$TAG" ]; then
+            echo "Git tag found: $TAG"
+
+            BASE_VERSION="${TAG#v}"
+          else
+            echo "No Git tag found. Reading POM version..."
+
+            BASE_VERSION=$(grep -m1 '<version>' pom.xml \
+              | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          fi
+
+          VERSION="${BASE_VERSION}-RC0-SNAPSHOT"
+
+          echo "Base version: $BASE_VERSION"
+          echo "Build version: $VERSION"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set Maven Version
+        run: |
+          mvn versions:set \
+            -DnewVersion="${{ steps.version.outputs.version }}" \
+            -DgenerateBackupPoms=false
+
+      - name: Build and Deploy
         run: mvn clean deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
 
-      - name: Snapshot Deployed
-        run: echo "✅ Snapshot ${{ steps.version.outputs.VERSION }} deployed to GitHub Packages"
+      - name: Show Version
+        run: |
+          echo "✅ Deployed ${{ steps.version.outputs.version }}"

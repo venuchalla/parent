@@ -33,11 +33,11 @@
         </ref>
 
         <!-- Feature Branch -->
-        <ref type="branch">
-            <pattern>^feature/(?&lt;featureName&gt;.*)$</pattern>
-            <version>${describe.tag.version}-SNAPSHOT</version>
-            <updatePom>true</updatePom>
-        </ref>
+<!--        <ref type="branch">-->
+<!--            <pattern>^feature/(?&lt;featureName&gt;.*)$</pattern>-->
+<!--            <version>${describe.tag.version}-SNAPSHOT</version>-->
+<!--            <updatePom>true</updatePom>-->
+<!--        </ref>-->
         
         <!-- Git Tag -->
         <ref type="tag">
@@ -46,9 +46,5 @@
             <updatePom>true</updatePom>
         </ref>
     </refs>
-
-    <rev>
-        <version>0.0.0-${commit}</version>
-    </rev>
 
 </configuration>

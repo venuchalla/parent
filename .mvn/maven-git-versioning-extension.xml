@@ -11,7 +11,7 @@
         <ref type="tag">
             <pattern><![CDATA[v(?<version>\d+\.\d+\.\d+)]]></pattern>
             <version>${ref.version}</version>
-            <updatePom>true</updatePom>
+            <updatePom>false</updatePom>
         </ref>
 
         <!-- MAIN: uses whatever version is currently sitting in pom.xml
@@ -20,7 +20,7 @@
         <ref type="branch">
             <pattern>main</pattern>
             <version>${version.release}</version>
-            <updatePom>true</updatePom>
+            <updatePom>false</updatePom>
         </ref>
 
         <!-- RELEASE CANDIDATE: release/1.4.0 -> 1.4.0-RC.<n>
@@ -29,14 +29,14 @@
         <ref type="branch">
             <pattern><![CDATA[release/(?<version>\d+\.\d+\.\d+)]]></pattern>
             <version>${ref.version}-RC.${env.RC_NUMBER}</version>
-            <updatePom>true</updatePom>
+            <updatePom>false</updatePom>
         </ref>
 
         <!-- HOTFIX CANDIDATE: hotfix/1.4.1 -> 1.4.1-RC.<n>, same mechanism -->
         <ref type="branch">
             <pattern><![CDATA[hotfix/(?<version>\d+\.\d+\.\d+)]]></pattern>
             <version>${ref.version}-RC.${env.RC_NUMBER}</version>
-            <updatePom>true</updatePom>
+            <updatePom>false</updatePom>
         </ref>
 
         <!-- INTEGRATION: develop -> <pom-version-without-SNAPSHOT>-SNAPSHOT
@@ -46,7 +46,7 @@
         <ref type="branch">
             <pattern>develop</pattern>
             <version>${version.release}-SNAPSHOT</version>
-            <updatePom>true</updatePom>
+            <updatePom>false</updatePom>
         </ref>
 
         <!-- IN-PROGRESS WORK: feature/xyz, bugfix/xyz -> traceable snapshot,

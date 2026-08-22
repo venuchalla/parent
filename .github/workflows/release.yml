@@ -73,10 +73,20 @@ jobs:
             -DgenerateBackupPoms=false
 
       - name: Commit final version on release branch
+        id: commit
         run: |
           git add pom.xml
-          git commit -m "chore(release): set final version ${{ steps.version.outputs.final_version }}"
-          git push origin "${{ steps.version.outputs.release_branch }}"
+          if git diff --cached --quiet; then
+            echo "pom.xml unchanged (version was already final) - nothing to commit"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore(release): set final version ${{ steps.version.outputs.final_version }}"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push version commit
+        if: steps.commit.outputs.changed == 'true'
+        run: git push origin "${{ steps.version.outputs.release_branch }}"
 
       # -----------------------------------------------------------------
       # 2. Build and deploy. If this step fails, the job stops here -

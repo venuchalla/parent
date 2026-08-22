@@ -15,11 +15,19 @@ jobs:
   finalize:
     runs-on: ubuntu-latest
     steps:
+      - name: Verify this is a release branch
+        run: |
+          if [[ ! "${{ github.ref_name }}" =~ ^release/.+ ]]; then
+            echo "::error::This workflow can only be run against a release/* branch. You selected: '${{ github.ref_name }}'. Re-run it and pick a release/* branch from the branch dropdown."
+            exit 1
+          fi
+          echo "OK: running against release branch '${{ github.ref_name }}'"
+
       - name: Checkout selected release branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_PAT }}   # needs push rights to master/develop, see notes
+          token: ${{ secrets.GITHUB_TOKEN }}   # needs push rights to master/develop, see notes
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -31,8 +39,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "venuchalla"
+          git config user.email "venuchalla1993@gmail.com"
 
       # -----------------------------------------------------------------
       # 1. Derive the final version by stripping -SNAPSHOT / -RC.N off
@@ -96,7 +104,16 @@ jobs:
           git tag "v${{ steps.version.outputs.final_version }}"
           git push origin "v${{ steps.version.outputs.final_version }}"
 
+      # -----------------------------------------------------------------
+      # 4. Only reached once master + develop are both updated and pushed:
+      #    delete the release branch, it's served its purpose.
+      # -----------------------------------------------------------------
+      - name: Delete release branch
+        run: |
+          git push origin --delete "${{ steps.version.outputs.release_branch }}"
+
       - name: Summary
         run: |
           echo "Released ${{ steps.version.outputs.final_version }} from ${{ steps.version.outputs.release_branch }}"
           echo "Merged into main and tagged v${{ steps.version.outputs.final_version }}"
+          echo "Deleted release branch ${{ steps.version.outputs.release_branch }}"
